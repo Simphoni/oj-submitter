@@ -194,11 +194,39 @@ if store is True:
 if oj == '':
     getOJ()
 passwd_path = confdir + '/.' + oj + '-credentials'
+# fetch code path from input and check if the file exists
+if code_path == '':
+    code_path = input('Enter the code path. (e.g. ~/Documents/a.cpp or a.cpp): ')
+if code_path[0] == '~':
+    code_path = home + code_path[1:]
+if code_path[0] != '/':
+    code_path = os.getcwd() + '/' + code_path
+if os.path.exists(code_path) is False:
+    print("Solution file {} doesn't exist, exiting.".format(code_path))
+    sys.exit()
+# fetch user info from input
+user = readUserInfo()
+# copy code to ~/.ojsubmitter/cache*
+new_path = home + '/.ojsubmitter/cache'
+dot = len(code_path) - 1
+while dot > 0 and code_path[dot] != '.':
+    dot -= 1
+if code_path[dot] == '.':
+    new_path += code_path[dot:]
+os.system('cp ' + code_path + ' ' + new_path)
+# add random chars
+if code_path[dot:] == '.cpp':
+    attachment = 'This code is submitted by OJsubmitter developed by Simphoni'
+    for i in range(0, 30):
+        idx = int(random.random() * len(attachment))
+        if (attachment[idx] == ' '):
+            continue
+        attachment = attachment[:idx] + changeCap(attachment[idx]) + attachment[idx + 1:]
+    attachment = "'//" + attachment + ".'"
+    os.system('echo ' + attachment + ' >> ' + new_path)
 
 if oj == 'CF':
     # info-collecting module for Codeforces
-    # fetch user info from input
-    user = readUserInfo()
     # check missing elements
     if problem_id == '':
         print('Enter problem id. (e.g. 1053D):', end=' ')
@@ -211,41 +239,11 @@ if oj == 'CF':
     if problem_id[l - 1:].isalpha() is False:
         print('Invalid problem info, exiting.')
         sys.exit()
-    if code_path == '':
-        print('Enter the code path. (e.g. ~/Document/a.cpp or a.cpp):', end=' ')
-        code_path = input()
-    # ask for code_path and check if the file exists
-    if code_path[0] != '/' and code_path[0] != '~':
-        code_path = os.getcwd() + '/' + code_path
-    if os.path.exists(code_path) is False:
-        print("Solution file \033[0;31;46m{}\033[0m doesn't exist, exiting.".format(code_path))
-        sys.exit()
-    if os.path.exists(home + '/.ojsubmitter') is False:
-        os.system('mkdir ' + home + '/.ojsubmitter')
-    # copy code to ~/.ojsubmitter/cache*
-    new_path = home + '/.ojsubmitter/cache'
-    dot = len(code_path) - 1
-    while dot > 0 and code_path[dot] != '.':
-        dot -= 1
-    if code_path[dot] == '.':
-        new_path += code_path[dot:]
-    os.system('cp ' + code_path + ' ' + new_path)
-    # add random chars
-    if code_path[dot:] == '.cpp':
-        attachment = 'This code is submitted by OJsubmitter developed by Simphoni'
-        for i in range(0, 30):
-            idx = int(random.random() * len(attachment))
-            if (attachment[idx] == ' '):
-                continue
-            attachment = attachment[:idx] + changeCap(attachment[idx]) + attachment[idx + 1:]
-        attachment = "'//" + attachment + ".'"
-        os.system('echo ' + attachment + ' >> ' + new_path)
     import weblinker_cf
-    print('submiting \033[0;31;46m{}\033[0m to Codeforces \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
+    print('Submiting \033[0;31;46m{}\033[0m to Codeforces \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
     weblinker_cf.submitFirefox(problem_id[:l - 1], problem_id[l - 1:], new_path, user, quiet)
 elif oj == 'BZOJ':
     # info-collecting module for BZOJ
-    user = readUserInfo()
     # check missing elements
     if problem_id == '':
         print('Enter problem id. (e.g. 1001):', end=' ')
@@ -255,39 +253,8 @@ elif oj == 'BZOJ':
     if problem_id.isdigit() is False:
         print('Invalid problem info, exiting.')
         sys.exit()
-    if code_path == '':
-        print('Enter the code path. (e.g. ~/Document/a.cpp or a.cpp):', end=' ')
-        code_path = input()
-    # ask for code_path and check if the file exists
-    if code_path[0] != '/' and code_path[0] != '~':
-        code_path = os.getcwd() + '/' + code_path
-    if os.path.exists(code_path) is False:
-        print("Solution file \033[0;31;46m{}\033[0m doesn't exist, exiting.".format(code_path))
-        sys.exit()
-    if os.path.exists(home + '/.ojsubmitter') is False:
-        os.system('mkdir ' + home + '/.ojsubmitter')
-    # copy code to ~/.ojsubmitter/cache*
-    new_path = home + '/.ojsubmitter/cache'
-    dot = len(code_path) - 1
-    while dot > 0 and code_path[dot] != '.':
-        dot -= 1
-    if code_path[dot] == '.':
-        new_path += code_path[dot:]
-    os.system('cp ' + code_path + ' ' + new_path)
-    # add random chars
-    if code_path[dot:] == '.cpp':
-        attachment = 'This code is submitted by OJsubmitter developed by Simphoni'
-        for i in range(0, 30):
-            idx = int(random.random() * len(attachment))
-            if (attachment[idx] == ' '):
-                continue
-            attachment = attachment[:idx] + changeCap(attachment[idx]) + attachment[idx + 1:]
-        attachment = "'//" + attachment + ".'"
-        os.system('echo ' + attachment + ' >> ' + new_path)
     import weblinker_bzoj
-    print('submiting \033[0;31;46m{}\033[0m to BZOJ \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
+    print('Submiting \033[0;31;46m{}\033[0m to BZOJ \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
     weblinker_bzoj.submitFirefox(problem_id, new_path, user, quiet)
 else:
-    print('OnlineJudge {} currently not supported, exiting...'.format(oj))
-if os.path.exists(os.getcwd() + '/geckodriver.log'):
-    os.system('rm geckodriver.log')
+    print("OnlineJudge {} currently not supported. If you think it meanful to add it into ojsubmitter, please contact xjzjohn@outlook.com.".format(oj))

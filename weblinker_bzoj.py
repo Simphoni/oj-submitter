@@ -7,6 +7,7 @@ run `pip3 install selenium --user`.
 If you haven't installed pip3, run `sudo apt install python3-pip`.
 '''
 
+import os
 import time
 from selenium import webdriver
 
@@ -18,12 +19,12 @@ def submitFirefox(id, code_path, user_info, quiet):
     you can find it on https://github.com/mozilla/geckodriver/releases
     '''
     ojurl = 'https://www.lydsy.com/JudgeOnline'
-    option = webdriver.FirefoxOptions()
-    option.set_headless(quiet)
-    fx_driver = webdriver.Firefox(firefox_options=option)
-    fx_driver.get('about:blank')
-    fx_driver.maximize_window()
     try:
+        option = webdriver.FirefoxOptions()
+        option.set_headless(quiet)
+        fx_driver = webdriver.Firefox(firefox_options=option)
+        fx_driver.get('about:blank')
+        fx_driver.maximize_window()
         fx_driver.get(ojurl + '/loginpage.php')
         account = fx_driver.find_element_by_name('user_id')
         account.send_keys(user_info[0])
@@ -59,4 +60,10 @@ def submitFirefox(id, code_path, user_info, quiet):
                 break
             time.sleep(0.2)
     finally:
-        fx_driver.close()
+        try:
+            fx_driver.close()
+        except:
+            pass
+        print(os.getcwd())
+        if os.path.exists(os.getcwd() + '/geckodriver.log'):
+            os.system('rm geckodriver.log')
