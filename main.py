@@ -18,14 +18,16 @@ OJlist = ['CF', 'BZOJ']
 passwd_path = ''
 
 map = {
+    'cf': 'CF',
     'CF': 'CF',
+    'Cf': 'CF',
     'codeforces': 'CF',
     'Codeforces': 'CF',
-    'cf': 'CF',
-    'lydsy': 'BZOJ',
+    'bz': 'BZOJ',
     'BZ': 'BZOJ',
     'bzoj': 'BZOJ',
     'Bzoj': 'BZOJ',
+    'lydsy': 'BZOJ',
 }
 
 
