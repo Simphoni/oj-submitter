@@ -13,6 +13,7 @@ n = len(command)
 home = os.environ['HOME']
 confdir = home + '/.ojsubmitter'
 store = False
+quiet = False
 OJlist = ['CF', 'BZOJ']
 passwd_path = ''
 
@@ -46,14 +47,19 @@ def readUserInfo():
     for i in account:
         print("[{}] {}".format(cnt, i))
         cnt += 1
-    print('Select an account from local credentials:', end=' ')
+    print('Select an account from local credentials (default 0):', end=' ')
     try:
-        num = int(input())
+        num = input()
+        if num == '':
+            num = '0'
+        if not num.isdigit():
+            print('Invalid input, exiting...')
+            sys.exit()
+        num = int(num)
         if num >= len(account):
             print('Range violation, exiting...')
             sys.exit()
-    except:
-        print('Invalid input, exiting...')
+    except KeyboardInterrupt:
         sys.exit()
     cnt = 0
     for i in account:
@@ -72,14 +78,19 @@ def getOJ():
     global oj
     for i in range(0, len(OJlist)):
         print("[{}] {}".format(i, OJlist[i]))
-    print('Select an OJ from supported list:', end=' ')
+    print('Select an OJ from supported list (defaut 0):', end=' ')
     try:
-        num = int(input())
+        num = input()
+        if num == '':
+            num = '0'
+        if not num.isdigit():
+            print('Invalid input, exiting...')
+            sys.exit()
+        num = int(num)
         if num >= len(OJlist):
             print('Range violation, exiting...')
             sys.exit()
-    except:
-        print('Invalid input, exiting...')
+    except KeyboardInterrupt:
         sys.exit()
     oj = OJlist[num]
 
@@ -99,15 +110,14 @@ def storeUserInfo():
         file.close()
     except:
         account = {}
-    print('account:', end=' ')
-    fir = input()
+    fir = input('account: ')
     sec = getpass.getpass('password: ')
     if fir in account:
         print("This account has previously been stored, update password? [Y/n/d]", end='')
         a = input()
         if a == '' or a == 'y' or a == 'Y' or a == 'yes':
             account[fir] = sec
-        elif a == 'd' or a == 'delete':
+        elif a == 'd' or a == 'delete' or a == 'D':
             print('Deleting account...')
             account.pop(fir)
         else:
@@ -142,6 +152,8 @@ for i in range(1, n):
                 while command[i][d] != '=':
                     d = d + 1
                 oj = map[command[i][d + 1:]]
+            elif command[i][2:6] == 'quiet':
+                quiet = True
             else:
                 print("Ignoring argument '{}'.".format(command[i]))
         else:
@@ -165,6 +177,8 @@ for i in range(1, n):
                     oj = map[command[i][d + 1:]]
                 except:
                     oj = ''
+            elif command[i][1] == 'q':
+                quiet = True
             else:
                 print("Ignoring argument '{}'.".format(command[i]))
     else:
@@ -226,7 +240,7 @@ if oj == 'CF':
         os.system('echo ' + attachment + ' >> ' + new_path)
     import weblinker_cf
     print('submiting \033[0;31;46m{}\033[0m to Codeforces \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
-    weblinker_cf.submitFirefox(problem_id[:l - 1], problem_id[l - 1:], new_path, user)
+    weblinker_cf.submitFirefox(problem_id[:l - 1], problem_id[l - 1:], new_path, user, quiet)
 elif oj == 'BZOJ':
     # info-collecting module for BZOJ
     user = readUserInfo()
@@ -270,6 +284,8 @@ elif oj == 'BZOJ':
         os.system('echo ' + attachment + ' >> ' + new_path)
     import weblinker_bzoj
     print('submiting \033[0;31;46m{}\033[0m to BZOJ \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
-    weblinker_bzoj.submitFirefox(problem_id, new_path, user)
+    weblinker_bzoj.submitFirefox(problem_id, new_path, user, quiet)
 else:
     print('OnlineJudge {} currently not supported, exiting...'.format(oj))
+if os.path.exists(os.getcwd() + '/geckodriver.log'):
+    os.system('rm geckodriver.log')

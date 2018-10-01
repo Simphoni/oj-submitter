@@ -10,7 +10,7 @@ If you haven't installed pip3, run `sudo apt install python3-pip`.
 from selenium import webdriver
 
 
-def submitFirefox(round, id, code_path, user_info):
+def submitFirefox(round, id, code_path, user_info, quiet):
     '''
     This function starts firefox driver, so make sure firefox is installed.
     Requires geckodriver to interact with firefox
