@@ -14,8 +14,9 @@ home = os.environ['HOME']
 confdir = home + '/.ojsubmitter'
 store = False
 quiet = False
-OJlist = ['CF', 'BZOJ']
+OJlist = ['CF', 'BZOJ', 'XJOI']
 passwd_path = ''
+useConfig = False
 
 map = {
     'cf': 'CF',
@@ -28,6 +29,10 @@ map = {
     'bzoj': 'BZOJ',
     'Bzoj': 'BZOJ',
     'lydsy': 'BZOJ',
+    'xj': 'XJOI',
+    'xjoi': 'XJOI',
+    'XJOI': 'XJOI',
+    'Xjoi': 'XJOI'
 }
 
 
@@ -36,7 +41,7 @@ def readUserInfo():
         print("No user info stored, use 'ojsubmitter -a' to add one.")
         sys.exit()
     try:
-        file = open(passwd_path, 'rb')
+        file = open(passwd_path, "rb")
         account = pickle.load(file)
         file.close()
     except:
@@ -47,11 +52,10 @@ def readUserInfo():
         sys.exit()
     cnt = 0
     for i in account:
-        print("[{}] {}".format(cnt, i))
+        print(r"[{}] {}".format(cnt, i))
         cnt += 1
-    print('Select an account from local credentials (default 0):', end=' ')
     try:
-        num = input()
+        num = input("Select an account from local credentials (default 0): ")
         if num == '':
             num = '0'
         if not num.isdigit():
@@ -62,6 +66,7 @@ def readUserInfo():
             print('Range violation, exiting...')
             sys.exit()
     except KeyboardInterrupt:
+        print()
         sys.exit()
     cnt = 0
     for i in account:
@@ -93,9 +98,10 @@ def getOJ():
             print('Range violation, exiting...')
             sys.exit()
     except KeyboardInterrupt:
+        print('')
         sys.exit()
     oj = OJlist[num]
-
+    passwd_path = confdir + '/.' + oj + '-credentials'
 
 def storeUserInfo():
     if oj == '':
@@ -137,7 +143,7 @@ def storeUserInfo():
 for i in range(1, n):
     if command[i][0] == '-':
         if len(command[i]) == 1:
-            print("Ignoring argument '{}'.".format(command[i]))
+            print("Ignored argument '{}'.".format(command[i]))
         elif command[i][1] == '-':
             if command[i][2:6] == 'prob':
                 d = 5
@@ -156,8 +162,10 @@ for i in range(1, n):
                 oj = map[command[i][d + 1:]]
             elif command[i][2:6] == 'quiet':
                 quiet = True
+            elif command[i][2:6] == 'last':
+                useConfig = True
             else:
-                print("Ignoring argument '{}'.".format(command[i]))
+                print("Ignored argument '{}'.".format(command[i]))
         else:
             if command[i][1] == 'p':
                 d = 2
@@ -178,13 +186,14 @@ for i in range(1, n):
                 try:
                     oj = map[command[i][d + 1:]]
                 except:
+                    print("Ignored argument '{}'.".format(command[i]))
                     oj = ''
             elif command[i][1] == 'q':
                 quiet = True
             else:
-                print("Ignoring argument '{}'.".format(command[i]))
+                print("Ignored argument '{}'.".format(command[i]))
     else:
-        print("Ignoring argument '{}'.".format(command[i]))
+        print("Ignored argument '{}'.".format(command[i]))
 
 # add an account
 if store is True:
@@ -194,36 +203,37 @@ if store is True:
 if oj == '':
     getOJ()
 passwd_path = confdir + '/.' + oj + '-credentials'
-# fetch code path from input and check if the file exists
-if code_path == '':
-    code_path = input('Enter the code path. (e.g. ~/Documents/a.cpp or a.cpp): ')
-if code_path[0] == '~':
-    code_path = home + code_path[1:]
-if code_path[0] != '/':
-    code_path = os.getcwd() + '/' + code_path
-if os.path.exists(code_path) is False:
-    print("Solution file {} doesn't exist, exiting.".format(code_path))
-    sys.exit()
 # fetch user info from input
 user = readUserInfo()
-# copy code to ~/.ojsubmitter/cache*
-new_path = home + '/.ojsubmitter/cache'
-dot = len(code_path) - 1
-while dot > 0 and code_path[dot] != '.':
-    dot -= 1
-if code_path[dot] == '.':
-    new_path += code_path[dot:]
-os.system('cp ' + code_path + ' ' + new_path)
-# add random chars
-if code_path[dot:] == '.cpp':
-    attachment = 'This code is submitted by OJsubmitter developed by Simphoni'
-    for i in range(0, 30):
-        idx = int(random.random() * len(attachment))
-        if (attachment[idx] == ' '):
-            continue
-        attachment = attachment[:idx] + changeCap(attachment[idx]) + attachment[idx + 1:]
-    attachment = "'//" + attachment + ".'"
-    os.system('echo ' + attachment + ' >> ' + new_path)
+# fetch code path from input and check if the file exists
+if oj != 'XJOI':
+    if code_path == '':
+        code_path = input('Enter the code path. (e.g. ~/Documents/a.cpp or a.cpp): ')
+    if code_path[0] == '~':
+        code_path = home + code_path[1:]
+    if code_path[0] != '/':
+        code_path = os.getcwd() + '/' + code_path
+    if os.path.exists(code_path) is False:
+        print("Solution file {} doesn't exist, exiting.".format(code_path))
+        sys.exit()
+    # copy code to ~/.ojsubmitter/cache*
+    new_path = home + '/.ojsubmitter/cache'
+    dot = len(code_path) - 1
+    while dot > 0 and code_path[dot] != '.':
+        dot -= 1
+    if code_path[dot] == '.':
+        new_path += code_path[dot:]
+    os.system('cp ' + code_path + ' ' + new_path)
+    # add random chars
+    if code_path[dot:] == '.cpp':
+        attachment = 'This code is submitted by OJsubmitter developed by Simphoni'
+        for i in range(0, 30):
+            idx = int(random.random() * len(attachment))
+            if (attachment[idx] == ' '):
+                continue
+            attachment = attachment[:idx] + changeCap(attachment[idx]) + attachment[idx + 1:]
+            attachment = "'//" + attachment + ".'"
+        os.system('echo ' + attachment + ' >> ' + new_path)
 
 if oj == 'CF':
     # info-collecting module for Codeforces
@@ -256,5 +266,9 @@ elif oj == 'BZOJ':
     import weblinker_bzoj
     print('Submiting \033[0;31;46m{}\033[0m to BZOJ \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
     weblinker_bzoj.submitFirefox(problem_id, new_path, user, quiet)
+elif oj == 'XJOI':
+    # provide interactive config environment
+    import weblinker_xjoi
+    weblinker_xjoi.submitFirefox(user, quiet)
 else:
-    print("OnlineJudge {} currently not supported. If you think it meanful to add it into ojsubmitter, please contact xjzjohn@outlook.com.".format(oj))
+    print("OnlineJudge {} currently not supported. If you think it meanful to add it into OJsubmitter, please contact xjzjohn@outlook.com.".format(oj))
