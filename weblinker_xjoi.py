@@ -70,9 +70,9 @@ def submitFirefox(user_info, quiet):
             return
         if level == '':
             level = '2'
-            if not level.isdigit():
-                print('Invalid input, exiting...')
-                return
+        if not level.isdigit():
+            print('Invalid input, exiting...')
+            return
         if int(level) > leng:
             ID = int(level)
         else:
@@ -98,6 +98,7 @@ def submitFirefox(user_info, quiet):
         cur = 0
         while True:
             cur += 1
+            num = '{}'.format(cur)
             Num = 'T{}'.format(cur)
             alp = chr(ord('a') + cur - 1)
             Alp = chr(ord('A') + cur - 1)
@@ -116,6 +117,11 @@ def submitFirefox(user_info, quiet):
                 for i in defaultOrder:
                     if os.path.isfile(r'./' + Alp + r'/' + i):
                         code = r'./' + Alp + r'/' + i
+                        break
+            elif os.path.isdir(num):
+                for i in defaultOrder:
+                    if os.path.isfile(r'./' + num + r'/' + i):
+                        code = r'./' + num + r'/' + i
                         break
             elif os.path.isdir(Num):
                 for i in defaultOrder:
