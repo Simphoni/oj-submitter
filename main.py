@@ -232,8 +232,9 @@ if oj != 'XJOI':
             if (attachment[idx] == ' '):
                 continue
             attachment = attachment[:idx] + changeCap(attachment[idx]) + attachment[idx + 1:]
-            attachment = "'//" + attachment + ".'"
+        attachment = "'//" + attachment + ".'"
         os.system('echo ' + attachment + ' >> ' + new_path)
+
 
 if oj == 'CF':
     # info-collecting module for Codeforces

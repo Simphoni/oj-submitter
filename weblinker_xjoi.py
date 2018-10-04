@@ -10,6 +10,7 @@ If you haven't installed pip3, run `sudo apt install python3-pip`.
 
 import os
 import time
+import random
 from selenium import webdriver
 
 
@@ -23,6 +24,12 @@ defaultOrder = [
     'std.cpp', 'main.cpp',
     'bru.cpp', 'brute.cpp', 'bf.cpp'
 ]
+
+
+def changeCap(c):
+    if ord('a') <= ord(c) and ord(c) <= ord('z'):
+        return chr(ord(c) + ord('A') - ord('a'))
+    return chr(ord(c) + ord('a') - ord('A'))
 
 
 def checkValidUrl(driver):
@@ -110,23 +117,23 @@ def submitFirefox(user_info, quiet):
             code = ''
             if os.path.isdir(alp):
                 for i in defaultOrder:
-                    if os.path.isfile(r'./' + alp + r'/' + i):
-                        code = r'./' + alp + r'/' + i
+                    if os.path.isfile('./' + alp + '/' + i):
+                        code = './' + alp + '/' + i
                         break
             elif os.path.isdir(Alp):
                 for i in defaultOrder:
-                    if os.path.isfile(r'./' + Alp + r'/' + i):
-                        code = r'./' + Alp + r'/' + i
+                    if os.path.isfile('./' + Alp + '/' + i):
+                        code = './' + Alp + '/' + i
                         break
             elif os.path.isdir(num):
                 for i in defaultOrder:
-                    if os.path.isfile(r'./' + num + r'/' + i):
-                        code = r'./' + num + r'/' + i
+                    if os.path.isfile('./' + num + '/' + i):
+                        code = './' + num + '/' + i
                         break
             elif os.path.isdir(Num):
                 for i in defaultOrder:
-                    if os.path.isfile(r'./' + Num + r'/' + i):
-                        code = r'./' + Num + r'/' + i
+                    if os.path.isfile('./' + Num + '/' + i):
+                        code = './' + Num + '/' + i
                         break
             else:
                 for i in range((cur - 1) * 4, len(defaultOrder)):
@@ -150,7 +157,15 @@ def submitFirefox(user_info, quiet):
             else:
                 fx_driver.get(baseurl + '/problem/{}/submit'.format(cur))
                 file = open(code, 'r')
+                attachment = 'This code is submitted by OJsubmitter developed by Simphoni'
+                for i in range(0, 30):
+                    idx = int(random.random() * len(attachment))
+                    if (attachment[idx] == ' '):
+                        continue
+                    attachment = attachment[:idx] + changeCap(attachment[idx]) + attachment[idx + 1:]
+                attachment = "//" + attachment + "."
                 src = file.readlines()
+                src.append('\n' + attachment)
                 file.close()
                 source = fx_driver.find_element_by_class_name('submit-textarea')
                 source.send_keys(src)
