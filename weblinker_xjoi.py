@@ -85,7 +85,7 @@ def submitFirefox(user_info, quiet):
         else:
             fx_driver.get(ojurl + '/contests?type=' + level)
             contestList = fx_driver.find_elements_by_class_name('contest-table-text')
-            leng = len('contestList')
+            leng = len(contestList)
             for i in range(0, leng, 5):
                 print("[{}]: {} | {} | {} | {}".format(contestList[i].text,
                                                        contestList[i + 1].text,
