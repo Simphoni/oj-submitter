@@ -250,9 +250,9 @@ if oj == 'CF':
     if problem_id[l - 1:].isalpha() is False:
         print('Invalid problem info, exiting.')
         sys.exit()
-    import weblinker_cf
+    import weblinker.weblinker_cf
     print('Submiting \033[0;31;46m{}\033[0m to Codeforces \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
-    weblinker_cf.submitFirefox(problem_id[:l - 1], problem_id[l - 1:], new_path, user, quiet)
+    weblinker.weblinker_cf.submitFirefox(problem_id[:l - 1], problem_id[l - 1:], new_path, user, quiet)
 elif oj == 'BZOJ':
     # info-collecting module for BZOJ
     # check missing elements
@@ -264,12 +264,16 @@ elif oj == 'BZOJ':
     if problem_id.isdigit() is False:
         print('Invalid problem info, exiting.')
         sys.exit()
-    import weblinker_bzoj
+    import weblinker.weblinker_bzoj
     print('Submiting \033[0;31;46m{}\033[0m to BZOJ \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
-    weblinker_bzoj.submitFirefox(problem_id, new_path, user, quiet)
+    weblinker.weblinker_bzoj.submitFirefox(problem_id, new_path, user, quiet)
 elif oj == 'XJOI':
     # provide interactive config environment
-    import weblinker_xjoi
-    weblinker_xjoi.submitFirefox(user, quiet)
+    if not quiet:
+        import weblinker.weblinker_xjoi
+        weblinker.weblinker_xjoi.submitFirefox(user)
+    else:
+        import weblinker.weblinker_xjoi_quiet
+        weblinker.weblinker_xjoi_quiet.submitRequests(user)
 else:
     print("OnlineJudge {} currently not supported. If you think it meanful to add it into OJsubmitter, please contact xjzjohn@outlook.com.".format(oj))

@@ -40,7 +40,7 @@ def checkValidUrl(driver):
     return True
 
 
-def submitFirefox(user_info, quiet):
+def submitFirefox(user_info):
     '''
     This function starts firefox driver, so make sure firefox is installed.
     Requires geckodriver to interact with firefox
@@ -145,16 +145,12 @@ def submitFirefox(user_info, quiet):
                     path = input('Enter source path: ')
                 else:
                     path = input('Enter source path (detected {}): '.format(code))
-                if path == '':
-                    if code == '':
-                        raise KeyboardInterrupt
-                else:
-                    if not os.path.isfile(path):
-                        raise KeyboardInterrupt
+                if path != '':
                     code = path
             except KeyboardInterrupt:
                 print('Ignoring submission for {}.'.format(Num))
-            else:
+                continue
+            if os.path.isfile(code):
                 fx_driver.get(baseurl + '/problem/{}/submit'.format(cur))
                 file = open(code, 'r')
                 attachment = 'This code is submitted by OJsubmitter developed by Simphoni'
@@ -172,6 +168,8 @@ def submitFirefox(user_info, quiet):
                 button = fx_driver.find_element_by_class_name('submit-submit')
                 button.click()
                 print('Submit successful!!')
+            else:
+                print('Ignoring submission for {}.'.format(Num))
     finally:
         try:
             fx_driver.close()
