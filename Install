@@ -1,0 +1,18 @@
+#!/usr/bin/python3
+
+import os
+
+target = os.environ['HOME'] + '/.local/bin'
+if not os.path.isdir(target):
+    os.system('mkdir ' + target)
+os.system('ln -sf ' + os.getcwd() + '/main.py ' + target + '/ojsubmitter')
+targt = os.environ['Home'] + '/.zsh_completion'
+if not os.path.isdir(target):
+    os.system('mkdir ' + target)
+os.system('cp _ojsubmitter ' + target)
+zcomp = """
+fpath=($HOME/.zsh_completions $fpath)
+autoload -U compinit
+compinit"""
+os.system("echo '{}' >> ~/.zsh_history".format(zcomp))
+print('Installation finished.')

@@ -7,7 +7,7 @@ import random
 import requests
 
 defaultOrder = [
-    'a.cpp', 'A.cpp', '1.cpp', 'T1.cpp', 
+    'a.cpp', 'A.cpp', '1.cpp', 'T1.cpp',
     'b.cpp', 'B.cpp', '2.cpp', 'T2.cpp',
     'c.cpp', 'C.cpp', '3.cpp', 'T3.cpp',
     'd.cpp', 'D.cpp', '4.cpp', 'T4.cpp',
@@ -76,19 +76,23 @@ url = 'http://210.33.19.103'
 
 
 def submitRequests(user):
-    info = { 'user': user[0], 'pass': user[1] }
+    info = {'user': user[0], 'pass': user[1]}
     userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0"
     # login with a new session
     web = requests.session()
-    res = web.post(url, data = info, headers = {
+    res = web.post(url, data=info, headers={
         'Referer': url + '/', 'User-Agent': userAgent
     })
+    chk = web.get(url + '/user/change_profile')
+    if not accessible(chk.text):
+        print('Login failed, invalid username/password!')
+        sys.exit()
     for i in range(len(levels)):
         print('[{}]: {}'.format(i + 1, levels[i]))
     try:
         level = input('Select a level from the above options (default 2): ')
-    except KeyboardInterrupt:
-        puts('')
+    except KeyboardInterrupt or EOFError:
+        print('')
         sys.exit()
     if not level.isdigit():
         level = '2'
@@ -101,13 +105,14 @@ def submitRequests(user):
         if i + 5 > len(info):
             break
         print("[{}]: {} | {} | {} | {}".format(info[i], info[i + 1],
-                                               info[i + 2], info[i + 3], info[i + 4]))
+                                               info[i + 2], info[i + 3],
+                                               info[i + 4]))
     try:
         if len(info) == 0:
             id = input('Select a contest: ')
         else:
             id = input('Select a contest (default {}): '.format(info[0]))
-    except KeyboardInterrupt:
+    except KeyboardInterrupt or EOFError:
         print('')
         sys.exit()
     if id == '' and info[0]:
@@ -165,7 +170,7 @@ def submitRequests(user):
                 path = input('Enter source path (detected {}): '.format(code))
             if path != '':
                 code = path
-        except KeyboardInterrupt:
+        except KeyboardInterrupt or EOFError:
             print('')
             print('Ignoring submission for {}.'.format(Num))
             continue
@@ -183,12 +188,12 @@ def submitRequests(user):
             for i in lines:
                 src += i
             src = src + '\n' + attachment
-            keys = { 'language': 'g++', 'source': src }
+            keys = {'language': 'g++', 'source': src}
             header = {
                 'Referer': proburl + '/submit',
                 'User-Agent': userAgent,
             }
-            web.post(proburl + '/submit'.format(cur), data = keys, headers = header)
+            web.post(proburl+'/submit'.format(cur), data=keys, headers=header)
             file.close()
             print('Submit successful!!')
         else:

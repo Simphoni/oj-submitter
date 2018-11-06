@@ -1,31 +1,22 @@
 #!/usr/bin/python3
 '''
 This module contains submitting function on codeforces.
-
-This module requires selenium
-run `pip3 install selenium --user`.
-If you haven't installed pip3, run `sudo apt install python3-pip`.
 '''
 
 import os
 from selenium import webdriver
 
 
-def submitFirefox(round, id, code_path, user_info, quiet):
+def submitFirefox(round, id, code_path, user_info):
     '''
-    This function starts firefox driver, so make sure firefox is installed.
-    Requires geckodriver to interact with firefox
-    you can find it on https://github.com/mozilla/geckodriver/releases
+    This function submits code to Codeforces.
     '''
-    ojurl = 'https://codeforces.com'
+    ojurl = 'https://codeforc.es'
     try:
-        option = webdriver.FirefoxOptions()
-        option.set_headless(quiet)
-        fx_driver = webdriver.Firefox(firefox_options=option)
+        fx_driver = webdriver.Firefox()
         fx_driver.set_page_load_timeout(20)
-        if not quiet:
-            fx_driver.get('about:blank')
-            fx_driver.maximize_window()
+        fx_driver.get('about:blank')
+        fx_driver.maximize_window()
         try:
             fx_driver.get(ojurl + '/enter')
         except:
@@ -48,7 +39,6 @@ def submitFirefox(round, id, code_path, user_info, quiet):
         button = fx_driver.find_element_by_class_name("submit")
         button.click()
         print('Finished.')
-        raw_input('Press any key to exit.')
     finally:
         try:
             fx_driver.close()

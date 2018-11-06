@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 '''
 This module contains submitting function on BZOJ.
-
-This module requires selenium
-run `pip3 install selenium --user`.
-If you haven't installed pip3, run `sudo apt install python3-pip`.
 '''
 
 import os
@@ -14,9 +10,8 @@ from selenium import webdriver
 
 def submitFirefox(id, code_path, user_info, quiet):
     '''
-    This function starts firefox driver, so make sure firefox is installed.
-    Requires geckodriver to interact with firefox
-    you can find it on https://github.com/mozilla/geckodriver/releases
+    This function submits code to BZOJ.
+    It still uses firefox headless when quiet mode is on.
     '''
     ojurl = 'https://www.lydsy.com/JudgeOnline'
     try:
@@ -56,6 +51,7 @@ def submitFirefox(id, code_path, user_info, quiet):
             cur = round(time.time() - base, 3)
             if int(cur * 1000) % 10 == 0:
                 cur += 0.001
+            cur = round(cur, 3)
             print('[{}s]: {}'.format(cur, verdict))
             if verdict != 'Pending' and verdict != 'Running_&_Judging' and verdict != 'Compiling':
                 break

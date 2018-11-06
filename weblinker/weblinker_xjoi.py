@@ -2,20 +2,15 @@
 
 '''
 This module contains submitting function on XJOI.
-
-This module requires selenium
-run `pip3 install selenium --user`.
-If you haven't installed pip3, run `sudo apt install python3-pip`.
 '''
 
 import os
-import time
 import random
 from selenium import webdriver
 
 
 defaultOrder = [
-    'a.cpp', 'A.cpp', '1.cpp', 'T1.cpp', 
+    'a.cpp', 'A.cpp', '1.cpp', 'T1.cpp',
     'b.cpp', 'B.cpp', '2.cpp', 'T2.cpp',
     'c.cpp', 'C.cpp', '3.cpp', 'T3.cpp',
     'd.cpp', 'D.cpp', '4.cpp', 'T4.cpp',
@@ -42,19 +37,14 @@ def checkValidUrl(driver):
 
 def submitFirefox(user_info):
     '''
-    This function starts firefox driver, so make sure firefox is installed.
-    Requires geckodriver to interact with firefox
-    you can find it on https://github.com/mozilla/geckodriver/releases
+    This function submits code to XJOI.
     '''
     ojurl = 'http://210.33.19.103'
     try:
-        option = webdriver.FirefoxOptions()
-        option.set_headless(quiet)
-        fx_driver = webdriver.Firefox(firefox_options=option)
+        fx_driver = webdriver.Firefox()
         print('Firefox is on.')
-        if not quiet:
-            fx_driver.get('about:blank')
-            fx_driver.maximize_window()
+        fx_driver.get('about:blank')
+        fx_driver.maximize_window()
         fx_driver.get(ojurl)
         dropdown = fx_driver.find_elements_by_class_name('dropdown-toggle')
         dropdown[3].click()
@@ -73,7 +63,7 @@ def submitFirefox(user_info):
         try:
             level = input('Select a level from the above options (default 2) or state a contestID: ')
         except KeyboardInterrupt:
-            puts('')
+            print('')
             return
         if level == '':
             level = '2'

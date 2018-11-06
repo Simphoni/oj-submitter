@@ -1,0 +1,9 @@
+#compdef ojsubmitter
+
+_arguments -s \
+    '(-o --oj)'{-o,--oj=}'[Specify OJ name(CF/XJOI/BZOJ)]' \
+    '(-r --rate)'{-r,--rate}'[Rate a whole problemlist in XJOI]' \
+    '(-a --add)'{-a,--add}'[Add a pair of username/password to local credentials]' \
+    '(-c --code)'{-c,--code=}'[Specify source code path]' \
+    '(-h --history)'{-h,--history}'[View the history submission of certain user(s)]' \
+    '(-p --prob)'{-p,--prob=}'[Specify problem name]'

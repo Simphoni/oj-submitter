@@ -1,9 +1,11 @@
 #!/usr/bin/python3
+
 import os
 import sys
 import random
 import pickle
 import getpass
+import secure
 
 oj = ''
 code_path = ''
@@ -13,7 +15,9 @@ n = len(command)
 home = os.environ['HOME']
 confdir = home + '/.ojsubmitter'
 store = False
-quiet = False
+quiet = True
+rate = False
+history = False
 OJlist = ['CF', 'BZOJ', 'XJOI']
 passwd_path = ''
 useConfig = False
@@ -52,7 +56,7 @@ def readUserInfo():
         sys.exit()
     cnt = 0
     for i in account:
-        print(r"[{}] {}".format(cnt, i))
+        print("[{}] {}".format(cnt, i))
         cnt += 1
     try:
         num = input("Select an account from local credentials (default 0): ")
@@ -71,7 +75,7 @@ def readUserInfo():
     cnt = 0
     for i in account:
         if cnt == num:
-            return [i, account[i]]
+            return [i, secure.decrypt(account[i])]
         cnt += 1
 
 
@@ -85,7 +89,7 @@ def getOJ():
     global oj
     for i in range(0, len(OJlist)):
         print("[{}] {}".format(i, OJlist[i]))
-    print('Select an OJ from supported list (defaut 0):', end=' ')
+    print('Select an OJ from our supported list (defaut 0):', end=' ')
     try:
         num = input()
         if num == '':
@@ -101,7 +105,7 @@ def getOJ():
         print('')
         sys.exit()
     oj = OJlist[num]
-    passwd_path = confdir + '/.' + oj + '-credentials'
+
 
 def storeUserInfo():
     if oj == '':
@@ -124,7 +128,7 @@ def storeUserInfo():
         print("This account has previously been stored, update password? [Y/n/d]", end='')
         a = input()
         if a == '' or a == 'y' or a == 'Y' or a == 'yes':
-            account[fir] = sec
+            account[fir] = secure.encrypt(sec)
         elif a == 'd' or a == 'delete' or a == 'D':
             print('Deleting account...')
             account.pop(fir)
@@ -132,7 +136,7 @@ def storeUserInfo():
             print('Giving up...')
             sys.exit()
     else:
-        account[fir] = sec
+        account[fir] = secure.encrypt(sec)
     file = open(passwd_path, 'wb')
     pickle.dump(account, file)
     file.close()
@@ -160,10 +164,16 @@ for i in range(1, n):
                 while command[i][d] != '=':
                     d = d + 1
                 oj = map[command[i][d + 1:]]
-            elif command[i][2:6] == 'quiet':
+            elif command[i][2:9] == 'verbose':
                 quiet = True
             elif command[i][2:6] == 'last':
                 useConfig = True
+            elif command[i][2:6] == 'rate':
+                rate = True
+            elif command[i][2:9] == 'history':
+                history = True
+            elif command[i][2:5] == 'add':
+                store = True
             else:
                 print("Ignored argument '{}'.".format(command[i]))
         else:
@@ -188,16 +198,42 @@ for i in range(1, n):
                 except:
                     print("Ignored argument '{}'.".format(command[i]))
                     oj = ''
-            elif command[i][1] == 'q':
-                quiet = True
+            elif command[i][1] == 'v':
+                quiet = False
+            elif command[i][1] == 'r':
+                rate = True
+            elif command[i][1] == 'h':
+                history = True
             else:
                 print("Ignored argument '{}'.".format(command[i]))
     else:
         print("Ignored argument '{}'.".format(command[i]))
 
+brabrabra = 0
+if store is True:
+    brabrabra += 1
+if history is True:
+    brabrabra += 1
+if rate is True:
+    brabrabra += 1
+if brabrabra > 1:
+    print('Too many requests!!!')
+    sys.exit()
 # add an account
 if store is True:
     storeUserInfo()
+    sys.exit()
+if history is True:
+    import weblinker.cf_status_reader
+    weblinker.cf_status_reader.readStatus()
+    sys.exit()
+if rate is True:
+    passwd_path = confdir + '/.XJOI-credentials'
+    user = readUserInfo()
+    menu = input('problemset level: ')
+    submenu = input('problemset sublevel: ')
+    import weblinker.xjoi_rater
+    weblinker.xjoi_rater.rateIt(menu, submenu, user)
     sys.exit()
 # fetch oj name from input
 if oj == '':
@@ -250,9 +286,13 @@ if oj == 'CF':
     if problem_id[l - 1:].isalpha() is False:
         print('Invalid problem info, exiting.')
         sys.exit()
-    import weblinker.weblinker_cf
-    print('Submiting \033[0;31;46m{}\033[0m to Codeforces \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
-    weblinker.weblinker_cf.submitFirefox(problem_id[:l - 1], problem_id[l - 1:], new_path, user, quiet)
+    print('Submiting \033[36m{}\033[0m to Codeforces \033[36m{}\033[0m...'.format(code_path, problem_id))
+    if not quiet:
+        import weblinker.weblinker_cf
+        weblinker.weblinker_cf.submitFirefox(problem_id[:l - 1], problem_id[l - 1:], new_path, user)
+    else:
+        import weblinker.weblinker_cf_quiet
+        weblinker.weblinker_cf_quiet.submitRequests(problem_id, new_path, user)
 elif oj == 'BZOJ':
     # info-collecting module for BZOJ
     # check missing elements
@@ -265,7 +305,7 @@ elif oj == 'BZOJ':
         print('Invalid problem info, exiting.')
         sys.exit()
     import weblinker.weblinker_bzoj
-    print('Submiting \033[0;31;46m{}\033[0m to BZOJ \033[0;31;46m{}\033[0m...'.format(code_path, problem_id))
+    print('Submiting \033[36m{}\033[0m to BZOJ \033[36m{}\033[0m...'.format(code_path, problem_id))
     weblinker.weblinker_bzoj.submitFirefox(problem_id, new_path, user, quiet)
 elif oj == 'XJOI':
     # provide interactive config environment
