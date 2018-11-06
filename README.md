@@ -10,6 +10,7 @@ We currently only support Codeforces, BZOJ and XJOI.
 + Use `./main.py -q` to enable quiet mode(will not open GUI Firefox)  
 + Use `./main.py -r` to rate a whole problemlist in XJOI  
 + Use `./main.py -h` to view the history submissions of a certain user in Codeforces  
+  
 We now support XJOI Contests!!  
 Switch to your code directory and OJsubmitter will automatically detect your source code.  
 Enjoy :)  
@@ -19,8 +20,8 @@ For your safety, the parameters of our credential-storer is not given, you need 
 **OJsubmitter not working? Make sure python3-requests is installed.**  
 
 # TODO
-[x] Secure credential storage  
-[x] Rewrite Codeforces quiet mode  
-[x] XJOI rater  
-[x] Codeforces status reader  
-[ ] Language selection  
+- [x] Secure credential storage  
+- [x] Rewrite Codeforces quiet mode  
+- [x] XJOI rater  
+- [x] Codeforces status reader  
+- [ ] Language selection  
